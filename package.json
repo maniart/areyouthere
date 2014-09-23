@@ -2,7 +2,7 @@
   "name": "webapp-daf14",
   "version": "0.0.1",
   "description": "Interactive installation for Dumbo Arts Festival 2014",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/maniart/areyouthere/issues"
   },
-  "homepage": "https://github.com/maniart/areyouthere"
+  "homepage": "https://github.com/maniart/areyouthere",
+  "dependencies": {
+    "express": "^4.9.4",
+    "opencv": "^0.6.0",
+    "webrtc.io": "0.0.4"
+  }
 }
