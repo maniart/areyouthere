@@ -4,6 +4,7 @@ var areYouThere = (function(w, d, $) {
 	var init,
 		video,
 		canvas,
+
 		ctx,
 		localMediaStream,
 		socket,
@@ -13,8 +14,13 @@ var areYouThere = (function(w, d, $) {
 
 	// initialize all vars
 	video = d.querySelector('#video');
-	canvas = d.querySelector('canvas');
+	canvas = d.querySelector('#source');
+	drawing = d.querySelector('#drawing');
 	ctx = canvas.getContext('2d');
+
+	
+	drawingCtx = drawing.getContext('2d');
+	drawingCtx.fillStyle = "rgb(200,0,0)";
 	localMediaStream = null;
 	socket = io();
 	
@@ -30,7 +36,14 @@ var areYouThere = (function(w, d, $) {
 			}
 			$('#'+data.id).attr("src", buf);
 			*/
-				console.log('received this: ', imageBuffer);
+				drawingCtx.beginPath();
+				for(var i = 0; i < imageBuffer.length; i += 1) {
+					//drawingCtx.fillRect(drawing.width - imageBuffer[i].x, drawing.height - imageBuffer[i].y, 10, 10);
+					drawingCtx.beginPath();
+					drawingCtx.arc(drawing.width - (drawing.width - imageBuffer[i].x), drawing.height - (drawing.height - imageBuffer[i].y), 10, 0, 2 * Math.PI, false);
+					drawingCtx.fillStyle = 'rgba(200, 200, 20, .3)';
+					drawingCtx.fill();
+				}
 			});
 		});
 		
@@ -54,7 +67,7 @@ var areYouThere = (function(w, d, $) {
 			ctx.drawImage(video, 0, 0);
 			imageData = canvas.toDataURL('image/jpeg');
 			//var blob = BinaryUtil.base64ToBinary(img);
-			$('#temp').attr('src', imageData);
+			//$('#temp').attr('src', imageData);
 			/*
 			if(!printed) {
 				console.log('img is: ', img);

@@ -83,9 +83,9 @@ io.on('connection', function(socket) {
 					im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
 				}
 				
-				socket.volatile.emit('faceDetected', { imageBuffer : im });
-				socket.broadcast.volatile.emit('faceDetected', { imageBuffer : im });
-				console.log('Face detected and emitted.');
+				socket.volatile.emit('faceDetected', faces);
+				socket.broadcast.volatile.emit('faceDetected', faces);
+				console.log('Face detected and emitted.: ', faces);
 			});
 			
 			
