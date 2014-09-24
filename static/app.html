@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Are You There? app.html</title>
-	<script type="text/javascript" src="/main.js"></script>
-	<script type="text/javascript" src="/webrtc.io.js"></script>
-
+	<title>Are You There?</title>
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="/binaryutils.js"></script>
+	<script src="/usermedia.js"></script>
 </head>
 <body>
 
+	<video id='video' autoplay width="320" height="240"></video>
+	<canvas style="display:none;" width="320" height="240"></canvas>
+	<img id="temp" />
+	<div id="body"></div>
+
+	<script src="/main.js"></script>
 </body>
 </html>

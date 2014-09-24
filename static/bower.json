@@ -1,0 +1,28 @@
+{
+  "name": "webapp-daf14",
+  "version": "0.0.1",
+  "homepage": "https://github.com/maniart/areyouthere",
+  "authors": [
+    "maniart <mani.art@gmail.com>"
+  ],
+  "description": "Interactive installation for Dumbo Arts Festival 2014",
+  "main": "server.js",
+  "keywords": [
+    "art",
+    "installation",
+    "opencv",
+    "generative"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1"
+  }
+}
