@@ -19,17 +19,21 @@ var areYouThere = (function(w, d, $) {
 	socket = io();
 	
 	attachListeners = function() {
-		socket.on("image", function(imageBuffer){
+		socket.on('connect', function() {
+			console.log('connected');
+			socket.on('faceDetected', function(imageBuffer){
 			//var buf = BinaryUtil.binaryToBase64(data.blob);
-			var image = imageBuffer.data;
+			//var image = imageBuffer.data;
 			/*
 			if ($('#'+data.id).size() === 0) {
   				$("#body").append('<img id="'+ data.id +'" />');
 			}
 			$('#'+data.id).attr("src", buf);
 			*/
-			console.log('received this: ', imageBuffer.data);
+				console.log('received this: ', imageBuffer);
+			});
 		});
+		
 		video.addEventListener('timeupdate', function(e){
 			snapshot();
 		});
@@ -72,7 +76,8 @@ var areYouThere = (function(w, d, $) {
 	};
 
 	return {
-		init : init
+		init : init,
+		socket : socket
 	}
 
 }(window, document, jQuery));

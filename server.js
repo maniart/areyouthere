@@ -55,11 +55,14 @@ io.on('connection', function(socket) {
 	    //console.log('image >> \nid: ', socket.id);
 	    //console.log(data);
 	    imageBuffer = decodeBase64Image(data);
+	    
+
+	    /*
 	    fs.writeFile(path.join(__dirname, 'tmp/tmp.jpg'), imageBuffer.data, function(err) {
 	    	if(err) throw err;
 	    	//console.log('The file was saved.');
 	    });
-		
+		*/
 		
 	    //console.log('buffer is: ', buffer);
 	    /*
@@ -69,21 +72,29 @@ io.on('connection', function(socket) {
 	    });
 	    */
 	    
+
+	    
 	    cv.readImage(imageBuffer.data, function(err, im){
 			if(err) throw err;
 			im.detectObject(cv.FACE_CASCADE, {}, function(err, faces){
-			console.log('num of faces: ', faces.length);
-			for (var i=0;i<faces.length; i++){
-				var x = faces[i]
-				im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
-			}
-				socket.broadcast.volatile.emit('image', {
-			    	id: socket.id,
-			    	blob: data
-			    });
+				//console.log('num of faces: ', faces.length);
+				for (var i=0;i<faces.length; i++){
+					var x = faces[i]
+					im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
+				}
+				
+				socket.volatile.emit('faceDetected', { imageBuffer : im });
+				socket.broadcast.volatile.emit('faceDetected', { imageBuffer : im });
+				console.log('Face detected and emitted.');
 			});
+			
+			
+			
 		});
 		
+			
+
+
 	    
 	});
 	socket.on("disconnect", function(){
