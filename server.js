@@ -48,32 +48,23 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname , '/static/app.html'));
 });
 
+
+var lowThresh = 0;
+var highThresh = 300;
+var nIters = 1;
+var maxArea = 2500;
+
+var GREEN = [0, 255, 0]; //B, G, R
+var WHITE = [255, 255, 255]; //B, G, R
+var RED   = [0, 0, 255]; //B, G, R
+
 // socket.io setup
 io.on('connection', function(socket) {
 	console.log('new socket connection');
 	socket.on('image', function(data){
-	    //console.log('image >> \nid: ', socket.id);
-	    //console.log(data);
+	    
 	    imageBuffer = decodeBase64Image(data);
-	    
-
 	    /*
-	    fs.writeFile(path.join(__dirname, 'tmp/tmp.jpg'), imageBuffer.data, function(err) {
-	    	if(err) throw err;
-	    	//console.log('The file was saved.');
-	    });
-		*/
-		
-	    //console.log('buffer is: ', buffer);
-	    /*
-	    socket.broadcast.volatile.emit('image', {
-	    	id: socket.id,
-	    	blob: data
-	    });
-	    */
-	    
-
-	    
 	    cv.readImage(imageBuffer.data, function(err, im){
 			if(err) throw err;
 			im.detectObject(cv.FACE_CASCADE, {}, function(err, faces){
@@ -88,15 +79,43 @@ io.on('connection', function(socket) {
 				console.log('Face detected and emitted.: ', faces);
 			});
 			
-			
-			
 		});
-		
-			
+		*/
+		cv.readImage(imageBuffer.data, function(err, im) {
 
+			var big = new cv.Matrix(im.height(), im.width()); 
+			var all = new cv.Matrix(im.height(), im.width()); 
+
+			im.convertGrayscale();
+			im_canny = im.copy();
+
+			im_canny.canny(lowThresh, highThresh);
+			im_canny.dilate(nIters);
+
+			contours = im_canny.findContours();
+
+			for(i = 0; i < contours.size(); i++) {
+				if(contours.area(i) > maxArea) {
+					var moments = contours.moments(i);
+					var cgx = Math.round(moments.m10/moments.m00);
+					var cgy = Math.round(moments.m01/moments.m00);
+					big.drawContour(contours, i, GREEN);
+					big.line([cgx - 5, cgy], [cgx + 5, cgy], RED);
+					big.line([cgx, cgy - 5], [cgx, cgy + 5], RED);
+					//socket.broadcast.volatile.emit('outline', 'data:image/jpeg;base64,' + big.toBuffer().toString('base64'));
+					socket.volatile.emit('outline', 'data:image/jpeg;base64,' + big.toBuffer().toString('base64').toString('base64'));
+					//console.log(big.toBuffer().toString('base64'));
+				}
+			}
+
+			all.drawAllContours(contours, WHITE);
+
+
+		});
 
 	    
 	});
+
 	socket.on("disconnect", function(){
     	socket.broadcast.emit("leave", {
       		id: socket.id

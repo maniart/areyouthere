@@ -4,7 +4,8 @@ var areYouThere = (function(w, d, $) {
 	var init,
 		video,
 		canvas,
-
+		outline,
+		outlineCtx,
 		ctx,
 		localMediaStream,
 		socket,
@@ -16,8 +17,9 @@ var areYouThere = (function(w, d, $) {
 	video = d.querySelector('#video');
 	canvas = d.querySelector('#source');
 	drawing = d.querySelector('#drawing');
+	outline = d.querySelector('#outline');
 	ctx = canvas.getContext('2d');
-
+	outlineCtx = outline.getContext('2d');
 	
 	drawingCtx = drawing.getContext('2d');
 	drawingCtx.fillStyle = "rgb(200,0,0)";
@@ -28,14 +30,6 @@ var areYouThere = (function(w, d, $) {
 		socket.on('connect', function() {
 			console.log('connected');
 			socket.on('faceDetected', function(imageBuffer){
-			//var buf = BinaryUtil.binaryToBase64(data.blob);
-			//var image = imageBuffer.data;
-			/*
-			if ($('#'+data.id).size() === 0) {
-  				$("#body").append('<img id="'+ data.id +'" />');
-			}
-			$('#'+data.id).attr("src", buf);
-			*/
 				drawingCtx.beginPath();
 				for(var i = 0; i < imageBuffer.length; i += 1) {
 					//drawingCtx.fillRect(drawing.width - imageBuffer[i].x, drawing.height - imageBuffer[i].y, 10, 10);
@@ -44,6 +38,12 @@ var areYouThere = (function(w, d, $) {
 					drawingCtx.fillStyle = 'rgba(200, 200, 20, .3)';
 					drawingCtx.fill();
 				}
+			});
+			socket.on('outline', function(imageBuffer) {
+				console.log('outline: >> ', imageBuffer);
+				var img = new Image();
+				img.src = imageBuffer;
+				outlineCtx.drawImage(img, 0, 0);
 			});
 		});
 		
@@ -66,14 +66,6 @@ var areYouThere = (function(w, d, $) {
 		if (localMediaStream) {
 			ctx.drawImage(video, 0, 0);
 			imageData = canvas.toDataURL('image/jpeg');
-			//var blob = BinaryUtil.base64ToBinary(img);
-			//$('#temp').attr('src', imageData);
-			/*
-			if(!printed) {
-				console.log('img is: ', img);
-				printed = true;
-			}
-			*/
 			socket.emit("image", imageData);
 		}
 	};
