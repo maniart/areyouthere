@@ -3,48 +3,54 @@ var areYouThere = (function(w, d, $) {
 	// declare all vars
 	var init,
 		video,
-		canvas,
-		outline,
-		outlineCtx,
+		source,
 		ctx,
 		localMediaStream,
 		socket,
 		snapshot,
 		imageData,
+		output,
 		attachListeners;
 
-	// initialize all vars
-	video = d.querySelector('#video');
-	canvas = d.querySelector('#source');
-	drawing = d.querySelector('#drawing');
-	outline = d.querySelector('#outline');
-	ctx = canvas.getContext('2d');
-	outlineCtx = outline.getContext('2d');
-	
-	drawingCtx = drawing.getContext('2d');
-	drawingCtx.fillStyle = "rgb(200,0,0)";
+	// initialize all dem vars
 	localMediaStream = null;
 	socket = io();
+
+
+	video = d.querySelector('#video');
+	source = d.querySelector('#source');
+	drawing = d.querySelector('#drawing');
+	
+	ctx = source.getContext('2d');
+	
+	output = d.querySelector('#output');
+	outputCtx = output.getContext('2d');
+
+
+	drawingCtx = drawing.getContext('2d');
+	drawingCtx.fillStyle = "rgb(200,0,0)";
+	
+	outputCtx.translate(output.width, 0);
+	outputCtx.scale(-1, 1);
+	
+
+	
 	
 	attachListeners = function() {
 		socket.on('connect', function() {
-			console.log('connected');
+			console.log('socket.io >> connected');
 			socket.on('faceDetected', function(imageBuffer){
-				drawingCtx.beginPath();
-				for(var i = 0; i < imageBuffer.length; i += 1) {
-					//drawingCtx.fillRect(drawing.width - imageBuffer[i].x, drawing.height - imageBuffer[i].y, 10, 10);
-					drawingCtx.beginPath();
-					drawingCtx.arc(drawing.width - (drawing.width - imageBuffer[i].x), drawing.height - (drawing.height - imageBuffer[i].y), 10, 0, 2 * Math.PI, false);
-					drawingCtx.fillStyle = 'rgba(200, 200, 20, .3)';
-					drawingCtx.fill();
+				outputCtx.beginPath();
+				for(var i = 0; i < imageBuffer.length; i += 1) {					
+					outputCtx.clearRect(0,0,output.width, output.height);
+					outputCtx.beginPath();
+					outputCtx.arc((2.9 * imageBuffer[i].x), 2.84 * (output.height - (output.height - imageBuffer[i].y)), imageBuffer[i].height, 0, 2 * Math.PI, false);
+					outputCtx.fillStyle = 'rgba(200, 200, 20, 1)';
+					outputCtx.fill();
+
 				}
 			});
-			socket.on('outline', function(imageBuffer) {
-				console.log('outline: >> ', imageBuffer);
-				var img = new Image();
-				img.src = imageBuffer;
-				outlineCtx.drawImage(img, 0, 0);
-			});
+
 		});
 		
 		video.addEventListener('timeupdate', function(e){
@@ -65,7 +71,8 @@ var areYouThere = (function(w, d, $) {
 	snapshot = function() {
 		if (localMediaStream) {
 			ctx.drawImage(video, 0, 0);
-			imageData = canvas.toDataURL('image/jpeg');
+			
+			imageData = source.toDataURL('image/jpeg');
 			socket.emit("image", imageData);
 		}
 	};
