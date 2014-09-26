@@ -9,6 +9,7 @@ var areYouThere = (function(w, d, $) {
 		socket,
 		snapshot,
 		imageData,
+		fade,
 		output,
 		draw,
 		attachListeners;
@@ -34,6 +35,30 @@ var areYouThere = (function(w, d, $) {
 	outputCtx.translate(output.width, 0);
 	outputCtx.scale(-1, 1);
 	
+	var alpha = 0;
+	fade = function(direction) {
+		
+		if(direction === 'in') {
+			requestAnimFrame(function() {
+				while(alpha < 1) {
+					alpha += .0001;
+				}
+			});
+			
+		} else if(direction === 'out') {
+			alpha = 1;
+			requestAnimFrame(function() {
+				while(alpha > 0) {
+					alpha -= .0001;
+				}
+			});
+		} else {
+			throw new Error('Valid arguments are : \'in\' and \'out\'');
+		}
+		//return alpha;
+	};
+
+	var check = false;
 
 	draw = function(imageBuffer) {
 		// clear the stage
@@ -43,7 +68,7 @@ var areYouThere = (function(w, d, $) {
         outputCtx.rect(0, 0, output.width, output.width);
         outputCtx.fillStyle = 'white';
         outputCtx.fill();
-
+        outputCtx.fillStyle = 'rgba(200, 200, 20,' + alpha + ')';
 		for(var i = 0; i < imageBuffer.length; i += 1) {					
 			
         	// set the composite operation
@@ -51,7 +76,7 @@ var areYouThere = (function(w, d, $) {
 	        // draw the hole
 			outputCtx.beginPath();
 			outputCtx.arc((2.9 * imageBuffer[i].x), (2.84 * imageBuffer[i].y), imageBuffer[i].height, 0, 2 * Math.PI, false);
-			outputCtx.fillStyle = 'rgba(200, 200, 20, 1)';
+			
 			outputCtx.fill();
 
 			outputCtx.restore();
@@ -72,7 +97,12 @@ var areYouThere = (function(w, d, $) {
 			});
 
 		});
-		
+		socket.on('faceAdded', function(faceCount) {
+			console.log('Face added. # : ', faceCount);
+		});
+		socket.on('faceRemoved', function(faceCount) {
+			console.log('Face removed. # : ', faceCount);
+		});
 		video.addEventListener('timeupdate', function(e){
 			snapshot();
 		});
@@ -109,7 +139,7 @@ var areYouThere = (function(w, d, $) {
 
 	return {
 		init : init,
-		socket : socket
+		fade : fade
 	}
 
 }(window, document, jQuery));
