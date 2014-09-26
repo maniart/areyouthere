@@ -12,6 +12,7 @@ var areYouThere = (function(w, d, $) {
 		fade,
 		output,
 		draw,
+		initSlabText,
 		attachListeners;
 
 	// initialize all dem vars
@@ -60,8 +61,16 @@ var areYouThere = (function(w, d, $) {
 
 	var check = false;
 
+	initSlabText = function() {
+		$("h1").slabText({
+            // Don't slabtext the headers if the viewport is under 380px
+            //"viewportBreakpoint":380
+        });
+	};
+
 	draw = function(imageBuffer) {
 		// clear the stage
+		//console.log(alpha);
 		outputCtx.clearRect(0, 0, output.width, output.height);
 		outputCtx.save();
 		// draw white rectangle
@@ -90,14 +99,20 @@ var areYouThere = (function(w, d, $) {
 	attachListeners = function() {
 		socket.on('connect', function() {
 			console.log('socket.io >> connected');
+			/*
 			socket.on('faceDetected', function(imageBuffer){
 				requestAnimFrame(function() {
 					draw(imageBuffer);
 				});		
 			});
+			*/
 
 		});
 		socket.on('faceAdded', function(faceCount) {
+			requestAnimFrame(function() {
+				fade('in');	
+			});
+			
 			console.log('Face added. # : ', faceCount);
 		});
 		socket.on('faceRemoved', function(faceCount) {
@@ -132,7 +147,7 @@ var areYouThere = (function(w, d, $) {
 		UserMedia.check();
 		attachListeners();
 		UserMedia.play();
-
+		initSlabText();
 		console.log('Are You There?\nDUMBO Arts Festival 2014');
   
 	};
