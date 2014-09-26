@@ -10,6 +10,7 @@ var areYouThere = (function(w, d, $) {
 		snapshot,
 		imageData,
 		output,
+		draw,
 		attachListeners;
 
 	// initialize all dem vars
@@ -34,33 +35,40 @@ var areYouThere = (function(w, d, $) {
 	outputCtx.scale(-1, 1);
 	
 
-	
+	draw = function(imageBuffer) {
+		// clear the stage
+		outputCtx.clearRect(0, 0, output.width, output.height);
+		outputCtx.save();
+		// draw white rectangle
+        outputCtx.rect(0, 0, output.width, output.width);
+        outputCtx.fillStyle = 'white';
+        outputCtx.fill();
+
+		for(var i = 0; i < imageBuffer.length; i += 1) {					
+			
+        	// set the composite operation
+			outputCtx.globalCompositeOperation = 'destination-out';	
+	        // draw the hole
+			outputCtx.beginPath();
+			outputCtx.arc((2.9 * imageBuffer[i].x), (2.84 * imageBuffer[i].y), imageBuffer[i].height, 0, 2 * Math.PI, false);
+			outputCtx.fillStyle = 'rgba(200, 200, 20, 1)';
+			outputCtx.fill();
+
+			outputCtx.restore();
+
+		}
+		requestAnimFrame(function() {
+			draw(imageBuffer);
+		});		
+	};
 	
 	attachListeners = function() {
 		socket.on('connect', function() {
 			console.log('socket.io >> connected');
 			socket.on('faceDetected', function(imageBuffer){
-				// clear the stage
-				outputCtx.clearRect(0, 0, output.width, output.height);
-				outputCtx.save();
-				// draw white rectangle
-		        outputCtx.rect(0, 0, output.width, output.width);
-		        outputCtx.fillStyle = 'white';
-		        outputCtx.fill();
-
-				for(var i = 0; i < imageBuffer.length; i += 1) {					
-					
-		        	// set the composite operation
-					outputCtx.globalCompositeOperation = 'destination-out';	
-			        // draw the hole
-					outputCtx.beginPath();
-					outputCtx.arc((2.9 * imageBuffer[i].x), (2.84 * imageBuffer[i].y), imageBuffer[i].height, 0, 2 * Math.PI, false);
-					outputCtx.fillStyle = 'rgba(200, 200, 20, 1)';
-					outputCtx.fill();
-
-					outputCtx.restore();
-
-				}
+				requestAnimFrame(function() {
+					draw(imageBuffer);
+				});		
 			});
 
 		});
