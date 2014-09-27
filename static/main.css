@@ -9,13 +9,16 @@ body {
 	font-family: Helvetica, sans-serif;
 	font-size: 16px;
 	color: black;
+	/* temp */
+	height: 700px;
+	overflow: hidden;
 }
 #video {
 	transform: scaleX(-1);
 	display: none;
 	position: absolute;
 	z-index: 3;
-	opacity: .3;
+	opacity: .5;
 
 }
 #drawing {
@@ -34,29 +37,35 @@ body {
 	border: 1px solid #000;
 }
 #narrative {
-	background: white;
+	background: black;
+	color: white;
 	width: 910px;
 	height: 700px;
 	z-index: 1;
 }
 #output {
 	z-index: 2;
-
+	background: transparent;
+	-webkit-filter : blur(10px);
+	
+	/* temp */
+	display: none;
 }
 h1 {
+
 	font-size: 4em;
 	text-align: center;
-	margin-top: 200px;
-	font-weight: 900;
+	font-weight: 800;
 
 }
+
 /* slabText stylez */
 .slabtexted .slabtext {
 	display:-moz-inline-box;
 	display:inline-block;
 	white-space:nowrap;
 }
-	.slabtextinactive .slabtext {
+.slabtextinactive .slabtext {
 	display:inline;
 	white-space:normal;
 	font-size:1em !important;

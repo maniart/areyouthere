@@ -57,7 +57,7 @@ io.on('connection', function(socket) {
 	    cv.readImage(imageBuffer.data, function(err, im){
 			if(err) throw err;
 			im.detectObject(cv.FACE_CASCADE, {}, function(err, faces){
-				//console.log('num of faces: ', faces.length);
+				console.log('num of faces: ', faces.length);
 				if(faces.length > faceCount) {
 					faceCount = faces.length;
 					socket.volatile.emit('faceAdded', faceCount);
