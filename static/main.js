@@ -201,18 +201,18 @@ var areYouThere = (function(w, d, $) {
 
 		});
 		
-		socket.on('faceAdded', function(faceCount) {
+		socket.on('faceAdded', function(args) {
 			updateText(function() {
 				var index = Math.ceil(Math.random() * sentences.interactive.strings.length-1);
-				return typeof sentences.predefined[index] === 'function' ? sentences.predefined[index]() : sentences.predefined[index];	
+				return typeof sentences.predefined[index] === 'function' ? sentences.predefined[index](args) : sentences.predefined[index];	
 			});
 			
 		});
 
-		socket.on('faceRemoved', function(faceCount) {
+		socket.on('faceRemoved', function(args) {
 			updateText(function() {
 				var index = Math.ceil(Math.random() * sentences.predefined.length-1);
-				return typeof sentences.predefined[index] === 'function' ? sentences.predefined[index]() : sentences.predefined[index];	
+				return typeof sentences.predefined[index] === 'function' ? sentences.predefined[index](args) : sentences.predefined[index];	
 			});
 			
 		});

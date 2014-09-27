@@ -67,15 +67,15 @@ io.on('connection', function(socket) {
 				console.log('num of faces: ', faces.length);
 				if(faces.length > faceCount) {
 					faceCount = faces.length;
-					
-					socket.volatile.emit('faceAdded', faceCount);
+					totalFaceCount += Math.abs(faceCount - faces.length);
+					socket.volatile.emit('faceAdded', [faceCount, totalFaceCount]);
 					socket.broadcast.volatile.emit('faceAdded', faceCount);	
-					console.log('Face added. Current # : ', faceCount);
+					console.log('Face added. Current # : ', [faceCount, totalFaceCount]);
 				} else if(faces.length < faceCount){
 					faceCount = faces.length;
-					socket.volatile.emit('faceRemoved', faceCount);
-					socket.broadcast.volatile.emit('faceRemoved', faceCount);	
-					console.log('Face removed. Current # : ', faceCount);
+					socket.volatile.emit('faceRemoved', [faceCount, totalFaceCount]);
+					socket.broadcast.volatile.emit('faceRemoved', [faceCount, totalFaceCount]);	
+					console.log('Face removed. Current # : ', [faceCount, totalFaceCount]);
 				}
 				if(faces.length === 1) {
 					if(null === prevWidth) {
