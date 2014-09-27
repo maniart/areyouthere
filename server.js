@@ -67,6 +67,7 @@ io.on('connection', function(socket) {
 				console.log('num of faces: ', faces.length);
 				if(faces.length > faceCount) {
 					faceCount = faces.length;
+					
 					socket.volatile.emit('faceAdded', faceCount);
 					socket.broadcast.volatile.emit('faceAdded', faceCount);	
 					console.log('Face added. Current # : ', faceCount);
@@ -102,11 +103,6 @@ io.on('connection', function(socket) {
 					var x = faces[i]
 					console.log(x);
 					//im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
-				}
-				if(face.length > 0) {
-					socket.volatile.emit('faceDetected', faces);
-					totalFaceCount ++;
-					socket.broadcast.volatile.emit('faceDetected', faces);	
 				}
 				
 				//console.log('Face detected and emitted.');

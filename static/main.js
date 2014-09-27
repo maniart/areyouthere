@@ -46,39 +46,29 @@ var areYouThere = (function(w, d, $) {
 			'And don\'t assume that gaze is a one-way street',
 			'But the sense of "self" is something different',
 			'Something that cannot be achieved alone',
-			'Perhaps a contextual awareness'
+			'Perhaps a contextual awareness',
+			function(total) {
+				return 'I have counted ' + total + ' faces today';
+			},
+			function(total) {
+				return total + '. That\'s how many time I reached out.';	
+			},
+			'it is always nice to feel more gaze',
+			'Oh hello there!',
+			'Are you there?',
+			'Gosh! you ARE there!',
+			'I\'m indeed glad that you decided to engage in this conversation with me.',
+			'come closer',
+			'closer',
+			'I crave your gaze',
+			'it is always nice to feel more gaze',
+			'Come one come all! The more the merrier.',
+			function(currentCount) {
+				return currentCount > 1 ? 'It is pure excitement to engage with you ' + currentCount : 'It is pure excitement to engage with you.';  
+			}
+
 		],
 		interactive : {
-			strings : [
-				'Oh hello there!',
-				'Are you there?',
-				'Gosh! you ARE there!',
-				'I\'m indeed glad that you decided to engage in this conversation with me.',
-				'come closer',
-				'closer',
-				'I crave your gaze',
-			],
-			total : [
-				function(total) {
-					return 'I have counted ' + total + ' faces today';
-				},
-				function(total) {
-					return 'I have counted ' + total + ' faces today';	
-				},
-				function(total) {
-					return total + '. That\'s how many time I reached out.';	
-				},
-				function(total) {
-					return total + '. That\'s how many time I reached out.';	
-				}
-			],
-			added : [
-				'it is always nice to feel more gaze',
-				'Come one come all! The more the merrier.',
-				function(currentCount) {
-					return currentCount > 1 ? 'It is pure excitement to engage with you ' + currentCount : 'It is pure excitement to engage with you.';  
-				}
-			],
 			farther : [
 				'Have I offended you?',
 				'Don\'t go',
@@ -214,7 +204,7 @@ var areYouThere = (function(w, d, $) {
 		socket.on('faceAdded', function(faceCount) {
 			updateText(function() {
 				var index = Math.ceil(Math.random() * sentences.interactive.strings.length-1);
-				return sentences.interactive.strings[index];	
+				return typeof sentences.predefined[index] === 'function' ? sentences.predefined[index]() : sentences.predefined[index];	
 			});
 			
 		});
@@ -222,16 +212,12 @@ var areYouThere = (function(w, d, $) {
 		socket.on('faceRemoved', function(faceCount) {
 			updateText(function() {
 				var index = Math.ceil(Math.random() * sentences.predefined.length-1);
-				return sentences.predefined[index];	
+				return typeof sentences.predefined[index] === 'function' ? sentences.predefined[index]() : sentences.predefined[index];	
 			});
 			
 		});
 		
-		/*
-		socket.on('faceRemoved', function(faceCount) {
-			console.log('Face removed. # : ', faceCount);
-		});
-		*/
+
 		video.addEventListener('timeupdate', function(e){
 			snapshot();
 		});
