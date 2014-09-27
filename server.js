@@ -105,10 +105,10 @@ io.on('connection', function(socket) {
 					console.log(x);
 					//im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
 				}
-				if(faces.length > 0) {
-					socket.volatile.emit('faceDetected', faces);
-					socket.broadcast.volatile.emit('faceDetected', faces);	
-				}
+				
+				socket.volatile.emit('faceDetected', faces);
+				socket.broadcast.volatile.emit('faceDetected', faces);	
+			
 				//console.log('Face detected and emitted.');
 			});
 			
