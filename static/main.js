@@ -70,6 +70,7 @@ var areYouThere = (function(w, d, $) {
 			],
 			added : [
 				'it is always nice to feel more gaze',
+				'Come one come all! The more the merrier.',
 				function(currentCount) {
 					return currentCount > 1 ? 'It is pure excitement to engage with you ' + currentCount : 'It is pure excitement to engage with you.';  
 				};

@@ -58,6 +58,10 @@ h1 {
 	font-weight: 800;
 
 }
+.fadeOut {
+	transition: 300ms all ease-out;
+	opacity: 0;
+}
 
 /* slabText stylez */
 .slabtexted .slabtext {

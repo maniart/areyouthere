@@ -10,7 +10,9 @@ var http,
 	io,
 	faceCount,
 	decodeBase64Image,
-	imageBuffer;
+	imageBuffer,
+	distanceThreshold,
+	prevWidth;
 
 // initialize imports
 http = require('http');
@@ -25,6 +27,7 @@ server = http.createServer(app);
 io = socketio(server);
 port = process.env.PORT || 3030;
 faceCount = 0;
+distanceThreshold = 30;
 decodeBase64Image = function(dataString) {
 	var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
     response = {};
@@ -69,9 +72,29 @@ io.on('connection', function(socket) {
 					socket.broadcast.volatile.emit('faceRemoved', faceCount);	
 					console.log('Face removed. Current # : ', faceCount);
 				}
+				if(faces.length === 1) {
+					if(null === prevWidth) {
+						prevWidth = faces[0].width;
+					} else {
+						var diffWidth = faces[0].width - prevWidth;
+						if(Math.abs(diffWidth) >= distanceThreshold ) {
+							if(diffWidth > 0) {
+								socket.volatile.emit('closer');
+								socket.broadcast.volatile.emit('closer');	
+							} else {
+								socket.volatile.emit('farther');
+								socket.broadcast.volatile.emit('farther');	
+							}
+						}
+					}
+				}
+				if(faces.length === 0) {
+					prevWidth = null;
+				}
 				for (var i=0;i<faces.length; i++){
 					var x = faces[i]
-					im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
+					console.log(x);
+					//im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
 				}
 				
 				socket.volatile.emit('faceDetected', faces);
