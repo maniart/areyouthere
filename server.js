@@ -29,6 +29,7 @@ io = socketio(server);
 port = process.env.PORT || 3030;
 prevWidth = null;
 faceCount = 0;
+totalFaceCount = 0;
 distanceThreshold = 8;
 decodeBase64Image = function(dataString) {
 	var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
@@ -64,10 +65,10 @@ io.on('connection', function(socket) {
 	    cv.readImage(imageBuffer.data, function(err, im){
 			if(err) throw err;
 			im.detectObject(cv.FACE_CASCADE, {}, function(err, faces){
-				console.log('num of faces: ', faces.length);
+				//console.log('num of faces: ', faces.length);
 				if(faces.length > faceCount) {
-					faceCount = faces.length;
 					totalFaceCount += Math.abs(faceCount - faces.length);
+					faceCount = faces.length;
 					socket.volatile.emit('faceAdded', [faceCount, totalFaceCount]);
 					socket.broadcast.volatile.emit('faceAdded', faceCount);	
 					console.log('Face added. Current # : ', [faceCount, totalFaceCount]);
@@ -104,7 +105,10 @@ io.on('connection', function(socket) {
 					console.log(x);
 					//im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
 				}
-				
+				if(faces.length > 0) {
+					socket.volatile.emit('faceDetected', faces);
+					socket.broadcast.volatile.emit('faceDetected', faces);	
+				}
 				//console.log('Face detected and emitted.');
 			});
 			

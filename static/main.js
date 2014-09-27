@@ -203,7 +203,7 @@ var areYouThere = (function(w, d, $) {
 		
 		socket.on('faceAdded', function(args) {
 			updateText(function() {
-				var index = Math.ceil(Math.random() * sentences.interactive.strings.length-1);
+				var index = Math.ceil(Math.random() * sentences.predefined.length-1);
 				return typeof sentences.predefined[index] === 'function' ? sentences.predefined[index](args) : sentences.predefined[index];	
 			});
 			

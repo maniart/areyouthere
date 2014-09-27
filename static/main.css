@@ -10,7 +10,7 @@ body {
 	font-size: 16px;
 	color: black;
 	/* temp */
-	height: 700px;
+	height: 800px;
 	overflow: hidden;
 }
 #video {
@@ -32,24 +32,27 @@ body {
 }
 #output, #narrative {
 	position: absolute;
-	top: 0;
-	left: 0;
+	
 	border: 1px solid #000;
 }
 #narrative {
 	background: black;
 	color: white;
-	width: 910px;
-	height: 700px;
+	top: 0;
+	left: 240px;
+	width: 940px;
+	height: 800px;
 	z-index: 1;
 }
 #output {
 	z-index: 2;
 	background: transparent;
 	-webkit-filter : blur(10px);
-	
+	top: -10px;
+	left: 230px;
+	width: 960px;
+	height: 820px;
 	/* temp */
-	display: none;
 	
 }
 h1 {
