@@ -13,15 +13,19 @@ var areYouThere = (function(w, d, $) {
 		output,
 		yCenter,
 		draw,
+		updateText,
 		initSlabText,
 		attachListeners,
 		$narrative,
 		narrativeH,
+		textShuffler,
+		startTextShuffler,
 		sentences;
 
 	// initialize all dem vars
 	localMediaStream = null;
 	socket = io();
+
 
 	sentences = {
 		predefined : [
@@ -49,7 +53,7 @@ var areYouThere = (function(w, d, $) {
 				'Oh hello there!',
 				'Are you there?',
 				'Gosh! you ARE there!',
-				'I\'m indeed glad that you decided to engage in this conversation with me.'
+				'I\'m indeed glad that you decided to engage in this conversation with me.',
 				'come closer',
 				'closer',
 				'I crave your gaze',
@@ -73,7 +77,7 @@ var areYouThere = (function(w, d, $) {
 				'Come one come all! The more the merrier.',
 				function(currentCount) {
 					return currentCount > 1 ? 'It is pure excitement to engage with you ' + currentCount : 'It is pure excitement to engage with you.';  
-				};
+				}
 			],
 			farther : [
 				'Have I offended you?',
@@ -108,31 +112,6 @@ var areYouThere = (function(w, d, $) {
 	
 	$narrative = $('#narrative');
 	narrativeH = $narrative.height();
-
-	var alpha = 0;
-	fade = function(direction) {
-		
-		if(direction === 'in') {
-			requestAnimFrame(function() {
-				while(alpha < 1) {
-					alpha += .0001;
-				}
-			});
-			
-		} else if(direction === 'out') {
-			alpha = 1;
-			requestAnimFrame(function() {
-				while(alpha > 0) {
-					alpha -= .0001;
-				}
-			});
-		} else {
-			throw new Error('Valid arguments are : \'in\' and \'out\'');
-		}
-		//return alpha;
-	};
-
-	var check = false;
 
 	yCenter = function() {
 		var $h1,
@@ -177,7 +156,7 @@ var areYouThere = (function(w, d, $) {
 			outputCtx.globalCompositeOperation = 'destination-out';	
 	        // draw the hole
 			outputCtx.beginPath();
-			outputCtx.arc((2.9 * imageBuffer[i].x), (2.7 * imageBuffer[i].y), Math.pow(imageBuffer[i].height, 1.3), 0, 2 * Math.PI, false);
+			outputCtx.arc((2.9 * imageBuffer[i].x), (2.7 * imageBuffer[i].y), Math.pow(imageBuffer[i].height, 1.5), 0, 2 * Math.PI, false);
 			
 			outputCtx.fill();
 
@@ -190,6 +169,17 @@ var areYouThere = (function(w, d, $) {
 		});
 		*/		
 	};
+
+	updateText = function(fn) {
+		$h1 = $('h1');
+		$h1.fadeOut(300);
+		$h1.text(fn());
+		$h1.slabText({
+			fontRatio : .78
+        });
+        yCenter();
+        $h1.fadeIn(300);
+	};
 	
 	attachListeners = function() {
 		socket.on('connect', function() {
@@ -198,24 +188,45 @@ var areYouThere = (function(w, d, $) {
 			socket.on('faceDetected', function(imageBuffer){
 				console.log('face detected');
 				draw(imageBuffer);
-				/*
-				requestAnimFrame(function() {
-					
+			});
+			
+			socket.on('closer', function() {
+				
+				updateText(function() {
+					var index = Math.ceil(Math.random() * sentences.interactive.closer.length-1);
+					return sentences.interactive.closer[index];	
 				});
-				*/		
+				
+			});
+
+			socket.on('farther', function() {
+					
+				updateText(function() {
+					var index = Math.ceil(Math.random() * sentences.interactive.farther.length-1);
+					return sentences.interactive.farther[index];	
+				});
+				
 			});
 			
 
 		});
-		/*
+		
 		socket.on('faceAdded', function(faceCount) {
-			requestAnimFrame(function() {
-				fade('in');	
+			updateText(function() {
+				var index = Math.ceil(Math.random() * sentences.interactive.strings.length-1);
+				return sentences.interactive.strings[index];	
 			});
 			
-			console.log('Face added. # : ', faceCount);
 		});
-		*/
+
+		socket.on('faceRemoved', function(faceCount) {
+			updateText(function() {
+				var index = Math.ceil(Math.random() * sentences.predefined.length-1);
+				return sentences.predefined[index];	
+			});
+			
+		});
+		
 		/*
 		socket.on('faceRemoved', function(faceCount) {
 			console.log('Face removed. # : ', faceCount);
@@ -251,13 +262,14 @@ var areYouThere = (function(w, d, $) {
 		attachListeners();
 		UserMedia.play();
 		initSlabText(yCenter);
+		//startTextShuffler();
 		console.log('Are You There?\nDUMBO Arts Festival 2014');
   
 	};
 
 	return {
 		init : init,
-		fade : fade
+		socket : socket
 	}
 
 }(window, document, jQuery));

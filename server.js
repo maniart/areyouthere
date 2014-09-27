@@ -12,7 +12,8 @@ var http,
 	decodeBase64Image,
 	imageBuffer,
 	distanceThreshold,
-	prevWidth;
+	prevWidth,
+	totalFaceCount;
 
 // initialize imports
 http = require('http');
@@ -26,8 +27,9 @@ app = express();
 server = http.createServer(app);
 io = socketio(server);
 port = process.env.PORT || 3030;
+prevWidth = null;
 faceCount = 0;
-distanceThreshold = 30;
+distanceThreshold = 8;
 decodeBase64Image = function(dataString) {
 	var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
     response = {};
@@ -57,6 +59,8 @@ io.on('connection', function(socket) {
 	    
 	    imageBuffer = decodeBase64Image(data);
 	    
+	
+
 	    cv.readImage(imageBuffer.data, function(err, im){
 			if(err) throw err;
 			im.detectObject(cv.FACE_CASCADE, {}, function(err, faces){
@@ -81,10 +85,13 @@ io.on('connection', function(socket) {
 							if(diffWidth > 0) {
 								socket.volatile.emit('closer');
 								socket.broadcast.volatile.emit('closer');	
+								prevWidth = null;
 							} else {
 								socket.volatile.emit('farther');
 								socket.broadcast.volatile.emit('farther');	
+								prevWidth = null;
 							}
+
 						}
 					}
 				}
@@ -96,9 +103,12 @@ io.on('connection', function(socket) {
 					console.log(x);
 					//im.ellipse(x.x + x.width/2, x.y + x.height/2, x.width/2, x.height/2);
 				}
+				if(face.length > 0) {
+					socket.volatile.emit('faceDetected', faces);
+					totalFaceCount ++;
+					socket.broadcast.volatile.emit('faceDetected', faces);	
+				}
 				
-				socket.volatile.emit('faceDetected', faces);
-				socket.broadcast.volatile.emit('faceDetected', faces);
 				//console.log('Face detected and emitted.');
 			});
 			
